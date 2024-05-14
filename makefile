@@ -1,7 +1,7 @@
 pythia_path := /home/jarno/pythia8311
 
 all: 
-	make event_generator
+	make Higgs_event_generator
 	
-event_generator: event_generator.cpp
-	$(CXX) event_generator.cpp -L $(pythia_path)/lib/ -l pythia8 -o event_generator.exe
+Higgs_event_generator: Higgs_event_generator.cpp
+	$(CXX) Higgs_event_generator.cpp $$(root-config --glibs --cflags --libs) -L $(pythia_path)/lib/ -l pythia8 -o Higgs_event_generator.exe
