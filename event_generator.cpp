@@ -6,7 +6,7 @@ using namespace Pythia8;
 int main() {
 
     const float Higgs_mass = 125;
-    const int event_count = 1;
+    const int event_count = 10;
 
     Pythia pythia;
 
