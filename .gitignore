@@ -1,3 +1,4 @@
 *.exe
 *.root
 makefile
+*.vscode
