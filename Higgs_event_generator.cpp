@@ -62,7 +62,7 @@ int main() {
     vector<float> pz;
     vector<float> e;
     vector<float> m;
-    vector<int> c;
+    vector<int> Q;
     vector<int> H;
 
     muons.Branch("px", "vector<float>", &px);
@@ -70,7 +70,7 @@ int main() {
     muons.Branch("pz", "vector<float>", &pz);
     muons.Branch("e", "vector<float>", &e);
     muons.Branch("m", "vector<float>", &m);
-    muons.Branch("c", "vector<int>", &c);
+    muons.Branch("Q", "vector<int>", &Q);
     muons.Branch("H", "vector<int>", &H);
 
     Pythia pythia;
@@ -118,9 +118,9 @@ int main() {
                 e.push_back(muon.e());
                 m.push_back(muon.m());
                 if (pythia.event[i].id() == muon_id) {
-                    c.push_back(-1);
+                    Q.push_back(-1);
                 } else {
-                    c.push_back(1);
+                    Q.push_back(1);
                 }
                 if (i == Higgs_daughter_indices[0] || i == Higgs_daughter_indices[1]) {
                     H.push_back(1);
@@ -147,7 +147,7 @@ int main() {
         pz.clear();
         e.clear();
         m.clear();
-        c.clear();
+        Q.clear();
         H.clear();
     }
 

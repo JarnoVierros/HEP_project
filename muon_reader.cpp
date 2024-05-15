@@ -18,7 +18,7 @@ int main() {
     TTreeReaderArray<float> pz(Reader, "pz");
     TTreeReaderArray<float> e(Reader, "e");
     TTreeReaderArray<float> m(Reader, "m");
-    TTreeReaderArray<int> c(Reader, "c");
+    TTreeReaderArray<int> Q(Reader, "Q");
     TTreeReaderArray<int> H(Reader, "H");
 
 
@@ -28,7 +28,7 @@ int main() {
 
     while (Reader.Next()) {
         for (int j=0;j<px.GetSize();j++) {
-            cout << "px: " << px[j] << ", py: " << py[j] << ", pz: " << pz[j] << ", e: " << e[j] << ", m: " << m[j] << ", c: " << c[j] << ", H: " << H[j] << endl;
+            cout << "px: " << px[j] << ", py: " << py[j] << ", pz: " << pz[j] << ", e: " << e[j] << ", m: " << m[j] << ", Q: " << Q[j] << ", H: " << H[j] << endl;
         }
         cout << endl;
     }
