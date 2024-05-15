@@ -5,15 +5,38 @@
 using namespace std;
 using namespace Pythia8;
 
-int find_final_children(Event event, Particle parent, int daughter_indices[2]) {
+int find_final_children(Event event, int parent_index, int daughter_indices[2]) {
+    Particle parent = event[parent_index];
     Particle daughter1 = event[parent.daughter1()];
     if (daughter1.id() != parent.id()) {
         daughter_indices[0] = parent.daughter1();
         daughter_indices[1] = parent.daughter2();
         return daughter1.id();
     } else {
-        return find_final_children(event, daughter1, daughter_indices);
+        return find_final_children(event, parent.daughter1(), daughter_indices);
     }
+}
+
+int find_final_index(Event event, int parent_index) {
+    Particle parent = event[parent_index];
+    if (parent.status() > 0) {
+        return parent_index;
+    }
+    if (event[parent.daughter1()].id() == parent.id()) {
+        if (event[parent.daughter1()].status() > 0) {
+            return parent.daughter1();
+        } else {
+            return find_final_index(event, parent.daughter1());
+        }
+    }
+    if (event[parent.daughter2()].id() == parent.id()) {
+        if (event[parent.daughter2()].status() > 0) {
+            return parent.daughter2();
+        } else {
+            return find_final_index(event, parent.daughter2());
+        }
+    }
+    return -1;
 }
 
 int main() {
@@ -34,27 +57,21 @@ int main() {
 
     TTree muons("muons", "Higgs muon decays");
 
-    float px1;
-    muons.Branch("px1", &px1, "px1/F");
-    float py1;
-    muons.Branch("py1", &py1, "py1/F");
-    float pz1;
-    muons.Branch("pz1", &pz1, "pz1/F");
-    float e1;
-    muons.Branch("e1", &e1, "e1/F");
-    float m1;
-    muons.Branch("m1", &m1, "m1/F");
+    vector<float> px;
+    vector<float> py;
+    vector<float> pz;
+    vector<float> e;
+    vector<float> m;
+    vector<int> Q;
+    vector<int> H;
 
-    float px2;
-    muons.Branch("px2", &px2, "px2/F");
-    float py2;
-    muons.Branch("py2", &py2, "py2/F");
-    float pz2;
-    muons.Branch("pz2", &pz2, "pz2/F");
-    float e2;
-    muons.Branch("e2", &e2, "e2/F");
-    float m2;
-    muons.Branch("m2", &m2, "m2/F");
+    muons.Branch("px", "vector<float>", &px);
+    muons.Branch("py", "vector<float>", &py);
+    muons.Branch("pz", "vector<float>", &pz);
+    muons.Branch("e", "vector<float>", &e);
+    muons.Branch("m", "vector<float>", &m);
+    muons.Branch("Q", "vector<int>", &Q);
+    muons.Branch("H", "vector<int>", &H);
 
     Pythia pythia;
     pythia.readString("25:m0 = " + to_string(Higgs_mass));
@@ -65,31 +82,73 @@ int main() {
 
     for (int iEvent = 0; iEvent < event_count; ++iEvent) {
         pythia.next();
-        int higgs_index;
+
+        bool muon_decay = false;
+        int Higgs_daughter_indices[2];
         for (int i=0; i<pythia.event.size(); ++i) {
             if (pythia.event[i].id() == Higgs_id) {
-                int daughter_indices[2];
-                int daughter_id = find_final_children(pythia.event, pythia.event[i], daughter_indices);
+                int daughter_id = find_final_children(pythia.event, i, Higgs_daughter_indices);
                 //cout << daughter_id << ", " << daughter_indices[0] << ", " << daughter_indices[1] << endl;
                 if (daughter_id == muon_id) {
+                    muon_decay = true;
                     ++muon_events;
-                    Particle daughter1 = pythia.event[daughter_indices[0]];
-                    Particle daughter2 = pythia.event[daughter_indices[1]];
-                    px1 = daughter1.px();
-                    py1 = daughter1.py();
-                    pz1 = daughter1.pz();
-                    e1 = daughter1.e();
-                    m1 = daughter1.m();
-                    px2 = daughter2.px();
-                    py2 = daughter2.py();
-                    pz2 = daughter2.pz();
-                    e2 = daughter2.e();
-                    m2 = daughter2.m();
-                    muons.Fill();
+                    Higgs_daughter_indices[0] = find_final_index(pythia.event, Higgs_daughter_indices[0]);
+                    Higgs_daughter_indices[1] = find_final_index(pythia.event, Higgs_daughter_indices[1]);
+                    //if (Higgs_daughter_indices[0] == -1 || Higgs_daughter_indices[1] == -1) {
+                    //    pythia.event.list(false, true);
+                    //}
                 }
                 break;
             }
         }
+        if (!muon_decay) {
+            continue;
+        }
+        int higgs_muons = 0;
+        vector<int> muon_indices;
+        for (int i=0; i<pythia.event.size(); ++i) {
+            if (pythia.event[i].status() < 0) {
+                continue;
+            }
+            if (pythia.event[i].id() == muon_id || pythia.event[i].id() == -1*muon_id) {
+                Particle muon = pythia.event[i];
+                px.push_back(muon.px());
+                py.push_back(muon.py());
+                pz.push_back(muon.pz());
+                e.push_back(muon.e());
+                m.push_back(muon.m());
+                if (pythia.event[i].id() == muon_id) {
+                    Q.push_back(-1);
+                } else {
+                    Q.push_back(1);
+                }
+                if (i == Higgs_daughter_indices[0] || i == Higgs_daughter_indices[1]) {
+                    H.push_back(1);
+                    higgs_muons++;
+                    muon_indices.push_back(i);
+                    muon_indices.push_back(1);
+                } else {
+                    H.push_back(0);
+                    muon_indices.push_back(i);
+                    muon_indices.push_back(0);
+                }
+            }
+        }
+        if (higgs_muons != 2) {
+            cout << "1st: " << Higgs_daughter_indices[0] << ", 2nd: " << Higgs_daughter_indices[1] << endl;
+            for (int i;i<muon_indices.size();i=i+2) {
+                cout << muon_indices[i] << ", " << muon_indices[i+1] << endl;
+            }
+            pythia.event.list(false, true);
+        }
+        muons.Fill();
+        px.clear();
+        py.clear();
+        pz.clear();
+        e.clear();
+        m.clear();
+        Q.clear();
+        H.clear();
     }
 
     pythia.stat();

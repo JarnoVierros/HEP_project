@@ -1,4 +1,4 @@
 *.exe
 *.root
+makefile
 *.vscode
-!Higgs_muon_decays.root
