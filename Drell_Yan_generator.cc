@@ -2,6 +2,7 @@
 #include "Pythia8/Pythia.h"
 #include "TTree.h"
 #include "TFile.h"
+#include <vector>
 using namespace std;
 using namespace Pythia8;
 
@@ -21,6 +22,7 @@ int main() {
 
     //Variables for tracking the number of leptons in events:
     int N_muon = 0;
+    int N_anti_muon = 0;
     
     //These could be deleted later if no use (currently used for counting how many Drell Yann process actually happened)
     int N_electron = 0;
@@ -68,16 +70,18 @@ int main() {
     
     TTree* muons = new TTree("muons", "Higgs muon decays");
 
-    float px1;
+    vector<float> px1;
     muons -> Branch("px1", &px1, "px1/F");
-    float py1;
+    vector<float> py1;
     muons -> Branch("py1", &py1, "py1/F");
-    float pz1;
+    vector<float> pz1;
     muons -> Branch("pz1", &pz1, "pz1/F");
-    float e1;
+    vector<float> e1;
     muons -> Branch("e1", &e1, "e1/F");
-    float m1;
+    vector<float> m1;
     muons -> Branch("m1", &m1, "m1/F");
+    vector<int> charge;
+    muons -> Branch("Q", &charge, "Q/I");
 
 
     //Leaving this here incase needed in future!
@@ -102,42 +106,70 @@ int main() {
     for (int iEvent = 0; iEvent < eventsN; ++iEvent){
         if (!pythia.next()) continue;
 
+        // emptying the vectors every event:
+        px1.clear();
+        py1.clear();
+        pz1.clear();
+        e1.clear();
+        m1.clear();
+        charge.clear();
+
         for (int i=0; i < pythia.event.size(); ++i){
-            if (pythia.event[i].id() == electron_id){
+            
+            if (pythia.event[i].id() == electron_id && pythia.event[i].isFinal()){
                 N_electron += 1;
-            } else if (pythia.event[i].id() == muon_id){
+            } else if (pythia.event[i].id() == muon_id && pythia.event[i].isFinal()){
                 ++ N_muon;
                 
-                px1 = pythia.event[i].px();
-                py1 = pythia.event[i].py();
-                pz1 = pythia.event[i].pz();
-                e1 = pythia.event[i].e();
-                m1 = pythia.event[i].m();
+                px1.push_back(pythia.event[i].px());
+                py1.push_back(pythia.event[i].py());
+                pz1.push_back(pythia.event[i].pz());
+                e1.push_back(pythia.event[i].e());
+                m1.push_back(pythia.event[i].m());
+                charge.push_back(1);
 
                 muons -> Fill();
 
 
-            } else if (pythia.event[i].id() == tau_id){
+            } else if (pythia.event[i].id() == tau_id && pythia.event[i].isFinal()){
                 N_tau += 1;
-            } else if (pythia.event[i].id() == eNeut_id){
+            } else if (pythia.event[i].id() == eNeut_id && pythia.event[i].isFinal()){
                 Ne_electron += 1;
-            } else if (pythia.event[i].id() == muNeut_id){
+            } else if (pythia.event[i].id() == muNeut_id && pythia.event[i].isFinal()){
                 Ne_muon += 1;
-            } else if (pythia.event[i].id() == tauNeut_id){
+            } else if (pythia.event[i].id() == tauNeut_id && pythia.event[i].isFinal()){
                 Ne_tau += 1;
             } /*else {
                 nDY += 1;
             }*/
+            
+            
+            
+            if (pythia.event[i].id() == -muon_id && pythia.event[i].isFinal()){
+                ++ N_anti_muon;
+                
+                px1.push_back(pythia.event[i].px());
+                py1.push_back(pythia.event[i].py());
+                pz1.push_back(pythia.event[i].pz());
+                e1.push_back(pythia.event[i].e());
+                m1.push_back(pythia.event[i].m());
+                charge.push_back(-1);
+
+                muons -> Fill();
+            }
+
+            
         }
 
     }
 
     pythia.stat();
 
-    cout << "Electron, Muon, Tau lepton: " << N_electron <<", "<< N_muon << ", " << N_tau << endl;
-    cout << "Neutrinos (electron, muon, tau): " << Ne_electron <<", "<< Ne_muon << ", " << Ne_tau << endl;
-    int nLEP = 2* (N_electron + N_muon + N_tau + Ne_electron + Ne_muon + Ne_tau);
-    cout << "The number of leptons produced: " << nLEP << endl;
+    cout << "Final state Electron, Muon, Tau lepton: " << N_electron <<", "<< N_muon << ", " << N_tau << endl;
+    cout << "Final state anti muon: " << N_anti_muon << endl;
+    cout << "Final state Neutrinos (electron, muon, tau): " << Ne_electron <<", "<< Ne_muon << ", " << Ne_tau << endl;
+    int nLEP = (N_electron + N_muon + N_tau + Ne_electron + Ne_muon + Ne_tau);
+    cout << "The number of leptons produced (doesn't include anti-leptons): " << nLEP << endl;
     //cout << "Not Drell Yan: " << nDY << endl;
 
     metadata -> Fill();
