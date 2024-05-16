@@ -21,11 +21,6 @@ int main() {
     TTreeReaderArray<int> Q(Reader, "Q");
     TTreeReaderArray<int> H(Reader, "H");
 
-
-    TTree* muons;
-    in_file.GetObject("muons", muons);
-
-
     while (Reader.Next()) {
         for (int j=0;j<px.GetSize();j++) {
             cout << "px: " << px[j] << ", py: " << py[j] << ", pz: " << pz[j] << ", e: " << e[j] << ", m: " << m[j] << ", Q: " << Q[j] << ", H: " << H[j] << endl;
