@@ -44,7 +44,7 @@ int main() {
     const float Higgs_mass = 125;
     const int Higgs_id = 25;
     const int muon_id = 13;
-    const int event_count = 100000;
+    const int event_count = 10000;
 
     TFile out_file("Higgs_muon_decays.root","RECREATE");
 
