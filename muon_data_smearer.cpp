@@ -12,6 +12,13 @@ float calculate_p(float px, float py, float pz) {
     return sqrt(px*px + py*py + pz*pz);
 }
 
+float calculate_theta(float p, float pz){
+    return acos(pz/p);
+}
+
+float calculate_eta(float theta) {
+    return -log(tan(theta/2));
+}
 
 float calculate_eta(float px, float py, float pz) {
     return atanh(pz/calculate_p(px, py, pz));
@@ -92,11 +99,14 @@ int main() {
         for (int i=0;i<old_px.GetSize();i++) {
 
             float old_p = calculate_p(old_px[i], old_px[i], old_px[i]);
-            float old_eta = calculate_eta(old_px[i], old_px[i], old_px[i]);
+            float old_theta = calculate_theta(old_p, old_pz[i]);
             float old_phi = calculate_phi(old_px[i], old_px[i]);
 
             new_p.push_back(old_p*rndm->Gaus(1, 0.01));
-            new_eta.push_back(old_eta + rndm->Gaus(0, 0.002));
+
+            float new_theta = old_theta + rndm->Gaus(0, 0.002);
+            new_eta.push_back(calculate_eta(new_theta));
+
             new_phi.push_back(old_phi + rndm->Gaus(0, 0.002));
 
             new_pT.push_back(calculate_pT(new_p.back(), new_eta.back()));
