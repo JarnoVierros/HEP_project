@@ -78,6 +78,11 @@ int main() {
     pythia.readString("HiggsSM:all = on");
     pythia.readString("Beams:eCM = 13600.");
 
+    //setting random seed:
+    pythia.readString("Random:setSeed = on");
+    pythia.readString("Random:seed = 0"); //This 0 means that a different seed is chosen based on time!
+    //-------------------------------------------
+
     pythia.init();
 
     for (int iEvent = 0; iEvent < event_count; ++iEvent) {

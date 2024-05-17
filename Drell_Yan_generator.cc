@@ -52,6 +52,10 @@ int main() {
     //Turning on Drell-Yann process
     pythia.readString("WeakSingleBoson:ffbar2ffbar(s:gmZ) = on");
 
+    //setting random seed:
+    pythia.readString("Random:setSeed = on");
+    pythia.readString("Random:seed = 0"); //This 0 means that a different seed is chosen based on time!
+    //-------------------------------------------
 
     pythia.readString("Next:numberShowEvent = 0");
     pythia.init();

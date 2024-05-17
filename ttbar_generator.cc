@@ -37,6 +37,10 @@ int main() {
     pythia.readString("WeakSingleBoson:ffbar2ffbar(s:gmZ) = off");
     pythia.readString("Top:ffbar2ttbar(s:gmZ) = on");
 
+    //setting random seed:
+    pythia.readString("Random:setSeed = on");
+    pythia.readString("Random:seed = 0"); //This 0 means that a different seed is chosen based on time!
+    //-------------------------------------------
 
     pythia.readString("Next:numberShowEvent = 0");
     pythia.init();
