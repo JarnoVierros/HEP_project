@@ -4,6 +4,8 @@
 #include "TFile.h"
 #include "TTreeReader.h"
 #include "TTreeReaderArray.h"
+#include "TH1F.h"
+#include "TCanvas.h"
 
 #include <string>
 #include <vector>
@@ -28,17 +30,17 @@ int main() {
     TTreeReaderArray<float> phi(Reader, "phi");
     TTreeReaderArray<float> m(Reader, "m");
     TTreeReaderArray<int> Q(Reader, "Q");
-    TTreeReaderArray<int> H(Reader, "H");
+    //TTreeReaderArray<int> H(Reader, "H");  //No use for this in this code
 
 
-    TTree* reconstructed = new TTree("reconstructed", "Reconstructed particle from muon and anti muon");
+    //TTree* reconstructed = new TTree("reconstructed", "Reconstructed particle from muon and anti muon");
     
     //float recon_p;
     //float reocon_pT;
     //float recon_eta;
     //float recon_phi;
     float recon_m;
-    int recon_Q;
+    //int recon_Q;
 
     // I'm not sure we need the following part (I would say no):
     // vector<int> recon_H;
@@ -47,12 +49,13 @@ int main() {
     //reconstructed -> Branch("pT", "vector<float>", &recon_pT);
     //reconstructed -> Branch("eta", "vector<float>", &recon_eta);
     //reconstructed -> Branch("phi", "vector<float>", &recon_phi);
-    reconstructed -> Branch("m", "float", &recon_m);
-    reconstructed -> Branch("Q", "float", &recon_Q);
+    //reconstructed -> Branch("m", "float", &recon_m);
+    //reconstructed -> Branch("Q", "float", &recon_Q);
 
 
     int Double_muon_counter = 0;
     int trigger_pass = 0;
+    TH1F* histo = new TH1F("h1", "Mass of the reconstructed particle", 100, 100, 150);
 
     while(Reader.Next()) {
 
@@ -68,9 +71,10 @@ int main() {
                 recon_m = sqrt(pow(m[0],2) + pow(m[1],2) + 2*p[0]*p[1] - 2*p[0]*p[1]( cos(phi[0])*cos(phi[1])
                         + sin(phi[0])*sin(phi[1]) + sinh(eta[0])*sinh(eta[1]) ));
 
-                recon_Q = 0;
+                //recon_Q = 0;
 
                 reconstructed -> Fill();
+                histo -> Fill(recon_m);
                 }
             }
         }
@@ -80,9 +84,21 @@ int main() {
     cout << "Number of double muons passing the trigger: " << trigger_pass << endl;
 
 
+    TCanvas* c = new TCanvas("mass_canvas", "", 800, 600);
+
+    c -> SetFillColor(42);
+    histo -> SetLineColor(kBlack);
+    histo -> SetFillColor(kYellow);
+    histo -> GetXaxis() -> SetTitle("Mass");
+    histo -> GetYaxis() -> SetTitle("Number of triggers);
+
+    histo -> Draw();
+    
+    c -> Print("Reconstructed_mass.root");
 
 
-
+   delete histo;
+   delete c;
 
 
 }
