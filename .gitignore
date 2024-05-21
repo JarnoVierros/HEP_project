@@ -3,3 +3,5 @@
 makefile
 *.vscode
 *.pdf
+data/
+figures/
