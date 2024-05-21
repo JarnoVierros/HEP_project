@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <fstream>
 #include "TTree.h"
 #include "TFile.h"
 #include "TTreeReader.h"
@@ -33,12 +34,39 @@ float calculate_pT(float p, float eta) {
     return p/cosh(eta);
 }
 
+void read_settings(map<string, string>& settings) {
+    string line;
+    ifstream ReadFile("settings.txt");
+    while (getline (ReadFile, line)) {
+        if (line[0] == '#') { //skip line if it's commented
+            continue;
+        }
+        string variable = "";
+        string value = "";
+        bool variable_name_area = true;
+        for (int i=0; i<line.length(); i++) {
+            if (line[i] == ' ' || line[i] == '\n') {
+                continue;
+            }
+            if (line[i] == '=') {
+                variable_name_area = false;
+                continue;
+            }
+            if (variable_name_area) {
+                variable += line[i];
+            } else {
+                value += line[i];
+            }
+        }
+        settings[variable] = value;
+    }
+}
+
 int main() {
-    
-    string fname;
-    cout << "Type the name of the root file without the .root extension (no space allowed): ";
-    cin >> fname;
-    TString filename(fname.c_str()); //without .root
+
+    map<string, string> settings;
+    read_settings(settings);
+    TString filename = settings["muon_data_smearer_filename"];
 
     //Creating objects for old data
 
@@ -102,9 +130,9 @@ int main() {
     while (Reader.Next()) {
         for (int i=0;i<old_px.GetSize();i++) {
 
-            float old_p = calculate_p(old_px[i], old_px[i], old_px[i]);
+            float old_p = calculate_p(old_px[i], old_py[i], old_pz[i]);
             float old_theta = calculate_theta(old_p, old_pz[i]);
-            float old_phi = calculate_phi(old_px[i], old_px[i]);
+            float old_phi = calculate_phi(old_px[i], old_py[i]);
 
             new_p.push_back(old_p*rndm->Gaus(1, 0.01));
 
