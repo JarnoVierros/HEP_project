@@ -96,8 +96,8 @@ int main() {
 
     histo -> Draw();
     
-    c -> Print("Reconstructed_mass.root");
-    c -> Print("Reconstructed_mass.pdf");
+    c -> Print("Reconstructed_mass_" + filename + ".root");
+    c -> Print("Reconstructed_mass_" + filename + ".pdf");
 
    delete histo;
    delete c;
