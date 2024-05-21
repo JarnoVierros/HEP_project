@@ -7,10 +7,38 @@ using namespace std;
 using namespace Pythia8;
 
 
-
+void read_settings(map<string, string>& settings) {
+    string line;
+    ifstream ReadFile("settings.txt");
+    while (getline (ReadFile, line)) {
+        if (line[0] == '#') { //skip line if it's commented
+            continue;
+        }
+        string variable = "";
+        string value = "";
+        bool variable_name_area = true;
+        for (int i=0; i<line.length(); i++) {
+            if (line[i] == ' ' || line[i] == '\n') {
+                continue;
+            }
+            if (line[i] == '=') {
+                variable_name_area = false;
+                continue;
+            }
+            if (variable_name_area) {
+                variable += line[i];
+            } else {
+                value += line[i];
+            }
+        }
+        settings[variable] = value;
+    }
+}
 
 int main() {
 
+    map<string, string> settings;
+    read_settings(settings);
 
     const int muon_id = 13;
 
@@ -20,7 +48,7 @@ int main() {
     int N_anti_muon = 0;
 
 
-    const int eventsN = 1000;
+    const int eventsN = stoi(settings["ttbar_generator_event_count"]);
 
     
     // Generator. Process selection

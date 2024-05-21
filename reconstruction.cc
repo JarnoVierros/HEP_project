@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <fstream>
 #include "TTree.h"
 #include "TFile.h"
 #include "TTreeReader.h"
@@ -13,14 +14,40 @@
 using namespace std;
 
 
-
+void read_settings(map<string, string>& settings) {
+    string line;
+    ifstream ReadFile("settings.txt");
+    while (getline (ReadFile, line)) {
+        if (line[0] == '#') { //skip line if it's commented
+            continue;
+        }
+        string variable = "";
+        string value = "";
+        bool variable_name_area = true;
+        for (int i=0; i<line.length(); i++) {
+            if (line[i] == ' ' || line[i] == '\n') {
+                continue;
+            }
+            if (line[i] == '=') {
+                variable_name_area = false;
+                continue;
+            }
+            if (variable_name_area) {
+                variable += line[i];
+            } else {
+                value += line[i];
+            }
+        }
+        settings[variable] = value;
+    }
+}
 
 int main() {
 
-    string fname;
-    cout << "Type the name of the root file without the .root extension (no space allowed): ";
-    cin >> fname;
-    TString filename(fname.c_str()); //without .root
+    map<string, string> settings;
+    read_settings(settings);
+    cout << settings["reconstruction_filename"] << endl;
+    TString filename = settings["reconstruction_filename"];
     
     TFile inFile(filename + ".root");
 
@@ -57,7 +84,7 @@ int main() {
 
     int Double_muon_counter = 0;
     int trigger_pass = 0;
-    TH1F* histo = new TH1F("h1", "Mass of the reconstructed particle", 200, 0, 200);
+    TH1F* histo = new TH1F("h1", "Mass of the reconstructed particle", 200, 0, 250);
 
     while(Reader.Next()) {
 
@@ -96,8 +123,8 @@ int main() {
 
     histo -> Draw();
     
-    c -> Print("Reconstructed_mass_" + filename + ".root");
-    c -> Print("Reconstructed_mass_" + filename + ".pdf");
+    c -> Print(filename + "_reconstructed_mass.root");
+    c -> Print(filename + "_reconstructed_mass.pdf");
 
    delete histo;
    delete c;

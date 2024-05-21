@@ -39,12 +39,43 @@ int find_final_index(Event event, int parent_index) {
     return -1;
 }
 
+void read_settings(map<string, string>& settings) {
+    string line;
+    ifstream ReadFile("settings.txt");
+    while (getline (ReadFile, line)) {
+        if (line[0] == '#') { //skip line if it's commented
+            continue;
+        }
+        string variable = "";
+        string value = "";
+        bool variable_name_area = true;
+        for (int i=0; i<line.length(); i++) {
+            if (line[i] == ' ' || line[i] == '\n') {
+                continue;
+            }
+            if (line[i] == '=') {
+                variable_name_area = false;
+                continue;
+            }
+            if (variable_name_area) {
+                variable += line[i];
+            } else {
+                value += line[i];
+            }
+        }
+        settings[variable] = value;
+    }
+}
+
 int main() {
+
+    map<string, string> settings;
+    read_settings(settings);
 
     const float Higgs_mass = 125;
     const int Higgs_id = 25;
     const int muon_id = 13;
-    const int event_count = 10000;
+    const int event_count = stoi(settings["Higgs_event_generator_event_count"]);
 
     TFile out_file("Higgs_muon_decays.root","RECREATE");
 

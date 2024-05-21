@@ -1,0 +1,10 @@
+#filenames
+muon_reader_filename=data/Higgs_muon_decays.root
+smeared_muon_reader_filename=data/Higgs_muon_decays_smeared.root
+muon_data_smearer_filename=data/Higgs_muon_decays
+reconstruction_filename=data/Higgs_muon_decays_smeared
+
+#event generator event counts
+Drell_Yan_generator_event_count=1000
+Higgs_event_generator_event_count=1000
+ttbar_generator_event_count=1000

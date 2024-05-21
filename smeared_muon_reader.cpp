@@ -1,7 +1,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <map>
 #include "TTree.h"
 #include "TFile.h"
 #include "TTreeReader.h"
@@ -45,29 +44,30 @@ int main() {
 
     map<string, string> settings;
     read_settings(settings);
-    TString filename = settings["muon_reader_filename"];
+    TString filename = settings["smeared_muon_reader_filename"];
 
     TFile in_file(filename);
 
     TTreeReader Reader("muons",&in_file);
 
-    TTreeReaderArray<float> px(Reader, "px");
-    TTreeReaderArray<float> py(Reader, "py");
-    TTreeReaderArray<float> pz(Reader, "pz");
-    TTreeReaderArray<float> e(Reader, "e");
+    TTreeReaderArray<float> p(Reader, "p");
+    TTreeReaderArray<float> pT(Reader, "pT");
+    TTreeReaderArray<float> eta(Reader, "eta");
+    TTreeReaderArray<float> phi(Reader, "phi");
     TTreeReaderArray<float> m(Reader, "m");
     TTreeReaderArray<int> Q(Reader, "Q");
     TTreeReaderArray<int> H(Reader, "H");
 
     while (Reader.Next()) {
-        if (px.GetSize() != 2) {
+        if (p.GetSize() != 2) {
             continue;
         }
-        for (int j=0;j<px.GetSize();j++) {
-            cout << "px: " << px[j] << ", py: " << py[j] << ", pz: " << pz[j] << ", e: " << e[j] << ", m: " << m[j] << ", Q: " << Q[j] << ", H: " << H[j] << endl;
-            //float m_H = sqrt(pow(e[0] + e[1], 2) - (pow(px[0] + px[1], 2) + pow(py[0] + py[1], 2) + pow(pz[0] + pz[1], 2)));
-            //cout << m_H << endl;
-        }
+
+        
+        float m_H = sqrt(pow(m[0],2) + pow(m[1],2) + 2*p[0]*p[1] - 2*p[0]*p[1]*( cos(phi[0])*cos(phi[1]) + sin(phi[0])*sin(phi[1]) + sinh(eta[0])*sinh(eta[1]) ));
+        cout << m_H << endl;
+        cout << pow(m[0],2) + pow(m[1],2) + 2*p[0]*p[1] - 2*p[0]*p[1]*( cos(phi[0])*cos(phi[1]) + sin(phi[0])*sin(phi[1]) + sinh(eta[0])*sinh(eta[1]) ) << endl;
+        
         cout << endl;
     }
 }
