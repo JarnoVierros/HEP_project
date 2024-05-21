@@ -5,6 +5,7 @@
 #include "TTreeReader.h"
 #include "TTreeReaderArray.h"
 #include "TRandom3.h"
+#include <string>
 
 using namespace std;
 
@@ -33,8 +34,11 @@ float calculate_pT(float p, float eta) {
 }
 
 int main() {
-
-    TString filename = "Higgs_muon_decays"; //without .root
+    
+    string fname;
+    cout << "Type the name of the root file without the .root extension (no space allowed): ";
+    cin >> fname;
+    TString filename(fname.c_str()); //without .root
 
     //Creating objects for old data
 

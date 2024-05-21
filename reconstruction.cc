@@ -7,6 +7,7 @@
 #include "TH1F.h"
 #include "TCanvas.h"
 
+#include <string>
 #include <vector>
 #include <math.h>
 using namespace std;
@@ -16,8 +17,12 @@ using namespace std;
 
 int main() {
 
+    string fname;
+    cout << "Type the name of the root file without the .root extension (no space allowed): ";
+    cin >> fname;
+    TString filename(fname.c_str()); //without .root
     
-    TFile inFile("Drell_Yan_muons_smeared.root");
+    TFile inFile(filename + ".root");
 
     TTreeReader Reader("muons",&inFile);
 
