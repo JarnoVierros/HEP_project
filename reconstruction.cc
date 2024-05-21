@@ -7,9 +7,8 @@
 #include "TH1F.h"
 #include "TCanvas.h"
 
-#include <string>
 #include <vector>
-#include <math>
+#include <math.h>
 using namespace std;
 
 
@@ -18,9 +17,7 @@ using namespace std;
 int main() {
 
     
-    string filename = "Drell_Yan_muons.root";
-
-    TFile* inFile = new TFile(filename);
+    TFile inFile("Drell_Yan_muons_smeared.root");
 
     TTreeReader Reader("muons",&inFile);
 
@@ -55,11 +52,11 @@ int main() {
 
     int Double_muon_counter = 0;
     int trigger_pass = 0;
-    TH1F* histo = new TH1F("h1", "Mass of the reconstructed particle", 100, 100, 150);
+    TH1F* histo = new TH1F("h1", "Mass of the reconstructed particle", 200, 0, 200);
 
     while(Reader.Next()) {
 
-        if( px.GetSize()==0){
+        if( p.GetSize()==2){
             if(Q[0]*Q[1] == -1){
                 ++Double_muon_counter;
 
@@ -68,12 +65,12 @@ int main() {
 
                 // Using conversion formulas form here: https://en.wikipedia.org/wiki/Pseudorapidity
                 // WE are also in Centre of mass frame where E = |p| (with the p being the 3-momentum)
-                recon_m = sqrt(pow(m[0],2) + pow(m[1],2) + 2*p[0]*p[1] - 2*p[0]*p[1]( cos(phi[0])*cos(phi[1])
+                recon_m = sqrt(pow(m[0],2) + pow(m[1],2) + 2*p[0]*p[1] - 2*p[0]*p[1]*( cos(phi[0])*cos(phi[1])
                         + sin(phi[0])*sin(phi[1]) + sinh(eta[0])*sinh(eta[1]) ));
 
                 //recon_Q = 0;
 
-                reconstructed -> Fill();
+                //reconstructed -> Fill();
                 histo -> Fill(recon_m);
                 }
             }
@@ -90,12 +87,12 @@ int main() {
     histo -> SetLineColor(kBlack);
     histo -> SetFillColor(kYellow);
     histo -> GetXaxis() -> SetTitle("Mass");
-    histo -> GetYaxis() -> SetTitle("Number of triggers);
+    histo -> GetYaxis() -> SetTitle("Number of triggers");
 
     histo -> Draw();
     
     c -> Print("Reconstructed_mass.root");
-
+    c -> Print("Reconstructed_mass.pdf");
 
    delete histo;
    delete c;
