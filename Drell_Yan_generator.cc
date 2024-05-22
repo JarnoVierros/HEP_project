@@ -1,10 +1,12 @@
 
+#include <ctime>
 #include "Pythia8/Pythia.h"
 #include "TTree.h"
 #include "TFile.h"
 #include <vector>
 using namespace std;
 using namespace Pythia8;
+
 
 
 void read_settings(map<string, string>& settings) {
@@ -70,6 +72,10 @@ int main() {
     // Generator. Process selection
     Pythia pythia;
 
+    pythia.readString("WeakZ0:gmZmode = 2");
+    pythia.readString("23:onMode = 0");
+    pythia.readString("23:onIfAny = 13");
+
     // 13.6 TeV centre of mass beam energy:
     pythia.readString("Beams:eCM = 13600.");
 
@@ -95,7 +101,11 @@ int main() {
 
     //Let's now initialize the ROOT stuff:
 
-    TFile* out_file = new TFile("Drell_Yan_muons.root", "RECREATE");
+    time_t now = time(0);
+    string now_string = to_string(now);
+    TString out_filename = "Drell_Yan_muons" + now_string + ".root";
+
+    TFile* out_file = new TFile(out_filename, "RECREATE");
     TTree* metadata = new TTree("metadata", "Additional information");
 
     int total_events = eventsN;
