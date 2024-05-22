@@ -43,28 +43,13 @@ int main() {
     read_settings(settings);
 
     const int muon_id = 13;
-    //const int electron_id = 11;
-    //const int tau_id = 15;
 
-    //Neutrinos:
-    /*
-    const int eNeut_id =12;
-    const int muNeut_id = 14;
-    const int tauNeut_id = 16;
-    */
 
-    //Variables for tracking the number of leptons in events:
+    //Variables for tracking the number of muon/anit-muon in events:
     int N_muon = 0;
     int N_anti_muon = 0;
     
-    // These could be deleted later if no use (currently used for counting how many Drell Yann process actually happened)
-    // int N_electron = 0;
-    // int N_tau = 0;
-    // int nDY = 0; // To count not DY processes
 
-//    int Ne_muon = 0;
-//    int Ne_electron = 0;
-//    int Ne_tau = 0;
 
     const int eventsN = int(stoi(settings["Drell_Yan_generator_event_count"]));
 
@@ -153,11 +138,6 @@ int main() {
 
         for (int i=0; i < pythia.event.size(); ++i){
             
-            /*
-            if (pythia.event[i].id() == electron_id && pythia.event[i].isFinal()){
-                N_electron += 1;
-            }
-            */
            
             if (pythia.event[i].id() == muon_id && pythia.event[i].isFinal()){
                 ++ N_muon;
@@ -171,20 +151,8 @@ int main() {
                 H.push_back(0);
 
                 muons -> Fill();
-		//cout << "Event: " << iEvent << ". Muon: " << px.size() << endl;
-		
-
-            }/* else if (pythia.event[i].id() == tau_id && pythia.event[i].isFinal()){
-                N_tau += 1;
-            } else if (pythia.event[i].id() == eNeut_id && pythia.event[i].isFinal()){
-                Ne_electron += 1;
-            } else if (pythia.event[i].id() == muNeut_id && pythia.event[i].isFinal()){
-                Ne_muon += 1;
-            } else if (pythia.event[i].id() == tauNeut_id && pythia.event[i].isFinal()){
-                Ne_tau += 1;
-            }*/ /*else {
-                nDY += 1;
-            }*/
+		        //cout << "Event: " << iEvent << ". Muon: " << px.size() << endl;
+            }
             
             
             
@@ -209,15 +177,6 @@ int main() {
     }
 
     pythia.stat();
-
-    /*
-    cout << "Final state Electron, Muon, Tau lepton: " << N_electron <<", "<< N_muon << ", " << N_tau << endl;
-    cout << "Final state anti muon: " << N_anti_muon << endl;
-    cout << "Final state Neutrinos (electron, muon, tau): " << Ne_electron <<", "<< Ne_muon << ", " << Ne_tau << endl;
-    int nLEP = (N_electron + N_muon + N_tau + Ne_electron + Ne_muon + Ne_tau);
-    cout << "The number of leptons produced (doesn't include anti-leptons): " << nLEP << endl;
-    //cout << "Not Drell Yan: " << nDY << endl;
-    */
 
     cout << "Final state muon: " << N_muon << endl;
     cout << "Final state anti muon: " << N_anti_muon << endl;

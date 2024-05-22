@@ -62,24 +62,8 @@ int main() {
     TTreeReaderArray<int> H(Reader, "H");
 
 
-    //TTree* reconstructed = new TTree("reconstructed", "Reconstructed particle from muon and anti muon");
-    
-    //float recon_p;
-    //float reocon_pT;
-    //float recon_eta;
-    //float recon_phi;
     float recon_m;
-    //int recon_Q;
 
-    // I'm not sure we need the following part (I would say no):
-    // vector<int> recon_H;
-
-    //reconstructed -> Branch("p", "vector<float>", &recon_p);
-    //reconstructed -> Branch("pT", "vector<float>", &recon_pT);
-    //reconstructed -> Branch("eta", "vector<float>", &recon_eta);
-    //reconstructed -> Branch("phi", "vector<float>", &recon_phi);
-    //reconstructed -> Branch("m", "float", &recon_m);
-    //reconstructed -> Branch("Q", "float", &recon_Q);
 
     TTree* old_metadata;
     inFile.GetObject("metadata", old_metadata);
@@ -122,13 +106,11 @@ int main() {
                     ++ trigger_pass;
 
                     // Using conversion formulas form here: https://en.wikipedia.org/wiki/Pseudorapidity
-                    // WE are also in Centre of mass frame where E = |p| (with the p being the 3-momentum)
+                    // WE are also in Centre of mass frame where (p_recon)^2 = (recon_m)^2
                     recon_m = sqrt(pow(m[0],2) + pow(m[1],2) + 2*sqrt( pow(m[0], 2) + pow(p[0], 2) )*sqrt( pow(m[1], 2) + pow(p[1], 2) ) - 2*pT[0]*pT[1]*( cos(phi[0])*cos(phi[1])
                             + sin(phi[0])*sin(phi[1]) + sinh(eta[0])*sinh(eta[1]) ));
 
-                    //recon_Q = 0;
 
-                    //reconstructed -> Fill();
                     histo -> Fill(recon_m);
 
                     output_mass = recon_m;
