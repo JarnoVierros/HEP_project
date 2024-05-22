@@ -96,31 +96,40 @@ int main() {
     int trigger_pass = 0;
     TH1F* histo = new TH1F("reconstructed_mass", "Mass of the reconstructed particle", 200, 0, 250);
 
+    const float eta_cut = 2.1; //2.1, 1
+    const float pT_cut = 20; //20, 50
+
     while(Reader.Next()) {
 
-        if( p.GetSize()==2){
-            if(Q[0]*Q[1] == -1){
+        vector<int> muon_indices;
+
+        for (int i=0; i<p.GetSize(); i++) {
+            if( abs(eta[i]) < eta_cut && pT[i] > pT_cut){
+                muon_indices.push_back(i);
+            }
+        }
+
+        if( muon_indices.size()==2){
+            if(Q[muon_indices[0]]*Q[muon_indices[1]] == -1){
                 ++Double_muon_counter;
 
-                if( abs(eta[0]) < 2.1 && abs(eta[1]) < 2.1 && pT[0] > 20 && pT[1] > 20){
-                    ++ trigger_pass;
+                ++ trigger_pass;
 
-                    // Using conversion formulas form here: https://en.wikipedia.org/wiki/Pseudorapidity
-                    // WE are also in Centre of mass frame where (p_recon)^2 = (recon_m)^2
-                    recon_m = sqrt(pow(m[0],2) + pow(m[1],2) + 2*sqrt( pow(m[0], 2) + pow(p[0], 2) )*sqrt( pow(m[1], 2) + pow(p[1], 2) ) - 2*pT[0]*pT[1]*( cos(phi[0])*cos(phi[1])
-                            + sin(phi[0])*sin(phi[1]) + sinh(eta[0])*sinh(eta[1]) ));
+                // Using conversion formulas form here: https://en.wikipedia.org/wiki/Pseudorapidity
+                // WE are also in Centre of mass frame where (p_recon)^2 = (recon_m)^2
+                recon_m = sqrt(pow(m[muon_indices[0]],2) + pow(m[muon_indices[1]],2) + 2*sqrt( pow(m[muon_indices[0]], 2) + pow(p[muon_indices[0]], 2) )*sqrt( pow(m[muon_indices[1]], 2) + pow(p[muon_indices[1]], 2) ) - 2*pT[muon_indices[0]]*pT[muon_indices[1]]*( cos(phi[muon_indices[0]])*cos(phi[muon_indices[1]])
+                        + sin(phi[muon_indices[0]])*sin(phi[muon_indices[1]]) + sinh(eta[muon_indices[0]])*sinh(eta[muon_indices[1]]) ));
 
 
-                    histo -> Fill(recon_m);
+                histo -> Fill(recon_m);
 
-                    output_mass = recon_m;
-                    if (H[0] == 1 && H[1] == 1) {
-                        output_H = 1;
-                    } else {
-                        output_H = 0;
-                    }
-                    new_tree.Fill();
+                output_mass = recon_m;
+                if (H[muon_indices[0]] == 1 && H[muon_indices[1]] == 1) {
+                    output_H = 1;
+                } else {
+                    output_H = 0;
                 }
+                new_tree.Fill();
             }
         }
     }
