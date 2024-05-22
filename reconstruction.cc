@@ -97,7 +97,7 @@ int main() {
 
                 // Using conversion formulas form here: https://en.wikipedia.org/wiki/Pseudorapidity
                 // WE are also in Centre of mass frame where E = |p| (with the p being the 3-momentum)
-                recon_m = sqrt(pow(m[0],2) + pow(m[1],2) + 2*p[0]*p[1] - 2*p[0]*p[1]*( cos(phi[0])*cos(phi[1])
+                recon_m = sqrt(pow(m[0],2) + pow(m[1],2) + 2*sqrt( pow(m[0], 2) + pow(p[0], 2) )*sqrt( pow(m[1], 2) + pow(p[1], 2) ) - 2*pT[0]*pT[1]*( cos(phi[0])*cos(phi[1])
                         + sin(phi[0])*sin(phi[1]) + sinh(eta[0])*sinh(eta[1]) ));
 
                 //recon_Q = 0;
