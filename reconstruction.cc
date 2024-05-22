@@ -59,7 +59,7 @@ int main() {
     TTreeReaderArray<float> phi(Reader, "phi");
     TTreeReaderArray<float> m(Reader, "m");
     TTreeReaderArray<int> Q(Reader, "Q");
-    //TTreeReaderArray<int> H(Reader, "H");  //No use for this in this code
+    TTreeReaderArray<int> H(Reader, "H");
 
 
     //TTree* reconstructed = new TTree("reconstructed", "Reconstructed particle from muon and anti muon");
@@ -81,10 +81,36 @@ int main() {
     //reconstructed -> Branch("m", "float", &recon_m);
     //reconstructed -> Branch("Q", "float", &recon_Q);
 
+    TTree* old_metadata;
+    inFile.GetObject("metadata", old_metadata);
+
+    int total_events;
+    old_metadata->SetBranchAddress("total_events", &total_events);
+    int muon_events;
+    old_metadata->SetBranchAddress("muon_events", &muon_events);
+
+    old_metadata->GetEntry(0);
+
+    TFile out_file(filename + "_reconstructed_mass.root","RECREATE");
+
+    TTree new_metadata("metadata", "Additional information");
+
+    new_metadata.Branch("total_events", &total_events, "total_events/I");
+    new_metadata.Branch("muon_events", &muon_events, "muon_events/I");
+
+    new_metadata.Fill();
+
+
+    TTree new_tree("reconstructed_masses", "Invariant mass of reconstructed two muon particle");
+
+    float output_mass;
+    int output_H;
+    new_tree.Branch("m", &output_mass, "m/F");
+    new_tree.Branch("H", &output_H, "H/I");
 
     int Double_muon_counter = 0;
     int trigger_pass = 0;
-    TH1F* histo = new TH1F("h1", "Mass of the reconstructed particle", 200, 0, 250);
+    TH1F* histo = new TH1F("reconstructed_mass", "Mass of the reconstructed particle", 200, 0, 250);
 
     while(Reader.Next()) {
 
@@ -95,15 +121,23 @@ int main() {
                 if( abs(eta[0]) < 2.1 && abs(eta[1]) < 2.1 && pT[0] > 20 && pT[1] > 20){
                     ++ trigger_pass;
 
-                // Using conversion formulas form here: https://en.wikipedia.org/wiki/Pseudorapidity
-                // WE are also in Centre of mass frame where E = |p| (with the p being the 3-momentum)
-                recon_m = sqrt(pow(m[0],2) + pow(m[1],2) + 2*sqrt( pow(m[0], 2) + pow(p[0], 2) )*sqrt( pow(m[1], 2) + pow(p[1], 2) ) - 2*pT[0]*pT[1]*( cos(phi[0])*cos(phi[1])
-                        + sin(phi[0])*sin(phi[1]) + sinh(eta[0])*sinh(eta[1]) ));
+                    // Using conversion formulas form here: https://en.wikipedia.org/wiki/Pseudorapidity
+                    // WE are also in Centre of mass frame where E = |p| (with the p being the 3-momentum)
+                    recon_m = sqrt(pow(m[0],2) + pow(m[1],2) + 2*sqrt( pow(m[0], 2) + pow(p[0], 2) )*sqrt( pow(m[1], 2) + pow(p[1], 2) ) - 2*pT[0]*pT[1]*( cos(phi[0])*cos(phi[1])
+                            + sin(phi[0])*sin(phi[1]) + sinh(eta[0])*sinh(eta[1]) ));
 
-                //recon_Q = 0;
+                    //recon_Q = 0;
 
-                //reconstructed -> Fill();
-                histo -> Fill(recon_m);
+                    //reconstructed -> Fill();
+                    histo -> Fill(recon_m);
+
+                    output_mass = recon_m;
+                    if (H[0] == 1 && H[1] == 1) {
+                        output_H = 1;
+                    } else {
+                        output_H = 0;
+                    }
+                    new_tree.Fill();
                 }
             }
         }
@@ -123,11 +157,13 @@ int main() {
 
     histo -> Draw();
     
-    c -> Print(filename + "_reconstructed_mass.root");
     c -> Print(filename + "_reconstructed_mass.pdf");
+    
+    new_metadata.Write();
+    new_tree.Write();
+    out_file.Close();
 
-   delete histo;
-   delete c;
-
+    //delete histo;
+    //delete c;
 
 }
