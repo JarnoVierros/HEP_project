@@ -1,8 +1,9 @@
 #filenames
-muon_reader_filename=advanced_data/DY_dataset_1/Drell_Yan_muons1716408107.root
-smeared_muon_reader_filename=advanced_data/DY_dataset_1/Drell_Yan_muons1716408107_smeared.root
-muon_data_smearer_filename=advanced_data/DY_dataset_1/Drell_Yan_muons1716408107
+muon_reader_filename=advanced_data/dense_DY_1.root
+smeared_muon_reader_filename=advanced_data/dense_DY_1_repaired_smeared.root
+muon_data_smearer_filename=advanced_data/dense_DY_1_repaired
 reconstruction_filename=data/ttbar_muons_smeared
+repair_filename=advanced_data/dense_DY_1
 
 #event generator event counts
 Drell_Yan_generator_event_count=2000000
