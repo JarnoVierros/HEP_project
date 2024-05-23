@@ -1,1 +1,0 @@
-This is the folder with the figures of data and it's fit
