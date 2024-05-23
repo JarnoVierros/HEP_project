@@ -1,11 +1,11 @@
 #filenames
-muon_reader_filename=data/Higgs_muon_decays.root
-smeared_muon_reader_filename=data/Higgs_muon_decays_smeared.root
-muon_data_smearer_filename=data/ttbar_muons
+muon_reader_filename=advanced_data/DY_dataset_1/Drell_Yan_muons1716408107.root
+smeared_muon_reader_filename=advanced_data/DY_dataset_1/Drell_Yan_muons1716408107_smeared.root
+muon_data_smearer_filename=advanced_data/DY_dataset_1/Drell_Yan_muons1716408107
 reconstruction_filename=data/ttbar_muons_smeared
 
 #event generator event counts
-Drell_Yan_generator_event_count=1000
+Drell_Yan_generator_event_count=2000000
 Higgs_event_generator_event_count=1000
 ttbar_generator_event_count=1000
 
@@ -20,4 +20,15 @@ Higgs_normalization_coefficient=1.046
 Drell_Yan_normalization_coefficient=4143.0
 ttbar_normalization_coefficient=0.006255
 
+#data combiner inputs
+number_of_files_to_combine=8
+combine1=advanced_data/DY_dataset_1/Drell_Yan_muons1716408107
+combine2=advanced_data/DY_dataset_1/Drell_Yan_muons1716408112
+combine3=advanced_data/DY_dataset_1/Drell_Yan_muons1716408116
+combine4=advanced_data/DY_dataset_1/Drell_Yan_muons1716408120
+combine5=advanced_data/DY_dataset_1/Drell_Yan_muons1716408125
+combine6=advanced_data/DY_dataset_1/Drell_Yan_muons1716408127
+combine7=advanced_data/DY_dataset_1/Drell_Yan_muons1716408130
+combine8=advanced_data/DY_dataset_1/Drell_Yan_muons1716408133
+combined_file_name=advanced_data/dense_DY_1
 
