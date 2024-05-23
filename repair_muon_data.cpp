@@ -173,6 +173,10 @@ int main() {
         if (first_event) {first_event = false;}
     }
 
+    //Add the last event, it's always valid
+    new_muons.Fill();
+    muon_event_count++;
+
     new_metadata.Fill();
     new_metadata.Write();
     new_muons.Write();
