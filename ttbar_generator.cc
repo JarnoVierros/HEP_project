@@ -57,13 +57,8 @@ int main() {
     // 13.6 TeV centre of mass beam energy:
     pythia.readString("Beams:eCM = 13600.");
 
-    //Turning off the QCD procesesses since we are simulating Drell Yann
-    pythia.readString("HardQCD:all = off");
-    pythia.readString("SoftQCD:all = off");
-
-    //
-    pythia.readString("WeakSingleBoson:ffbar2ffbar(s:gmZ) = off");
-    pythia.readString("Top:ffbar2ttbar(s:gmZ) = on");
+    //After turning these we can now turn all the top processes again
+    pythia.readString("Top:all = on");
 
     //setting random seed:
     pythia.readString("Random:setSeed = on");
