@@ -98,8 +98,8 @@ int main() {
     muons -> Branch("pz", "vector<float>" ,&pz);
     muons -> Branch("e", "vector<float>" ,&e);
     muons -> Branch("m", "vector<float>" ,&m);
-    muons -> Branch("Q", "vector<float>" ,&Q);
-    muons -> Branch("H", "vector<float>" ,&H);
+    muons -> Branch("Q", "vector<int>" ,&Q);
+    muons -> Branch("H", "vector<int>" ,&H);
 
 
     //--------------------------------------------------------------
@@ -123,11 +123,6 @@ int main() {
 
         for (int i=0; i < pythia.event.size(); ++i){
             
-            /*
-            if (pythia.event[i].id() == electron_id && pythia.event[i].isFinal()){
-                N_electron += 1;
-            }
-            */
            
             if (pythia.event[i].id() == muon_id && pythia.event[i].isFinal()){
                 ++ N_muon;
