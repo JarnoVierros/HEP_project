@@ -170,13 +170,7 @@ int main() {
                 }
             }
         }
-        if (higgs_muons != 2) {
-            cout << "1st: " << Higgs_daughter_indices[0] << ", 2nd: " << Higgs_daughter_indices[1] << endl;
-            for (int i;i<muon_indices.size();i=i+2) {
-                cout << muon_indices[i] << ", " << muon_indices[i+1] << endl;
-            }
-            pythia.event.list(false, true);
-        }
+
         muons.Fill();
         px.clear();
         py.clear();
