@@ -145,7 +145,6 @@ int main() {
                 Q.push_back(1);
                 H.push_back(0);
 
-                muons -> Fill();
 		        //cout << "Event: " << iEvent << ". Muon: " << px.size() << endl;
 		
             }
@@ -163,12 +162,13 @@ int main() {
                 Q.push_back(-1);
                 H.push_back(0);
 
-                muons -> Fill();
+                
                 //cout << "Event: " << iEvent << ". Anti muon: " << px.size() << endl;
             }
 
-            
         }
+
+        muons -> Fill();
 
     }
 
