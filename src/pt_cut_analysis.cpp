@@ -71,7 +71,7 @@ int main() {
     float Higgs_m;
     Higgs_masses_file->SetBranchAddress("m", &Higgs_m);
 
-    TH1F* Higgs_histo = new TH1F("Higgs_histo", "Normalized reconstructed mass distribution;m (GeV);events / 3.33 GeV", bin_count, lower_limit, upper_limit);
+    TH1F* Higgs_histo = new TH1F("Higgs_histo", "Normalized reconstructed mass distribution with pT > 90 GeV;m (GeV);events / 3.33 GeV", bin_count, lower_limit, upper_limit);
 
     int Higgs_count = 0;
 
@@ -136,7 +136,7 @@ int main() {
     combination_histo->Add(norm_ttbar_histo);
     combination_histo->Add(norm_Drell_Yan_histo);
 
-    combination_histo->SetAxisRange(0, 400000, "Y"); //400000, 160000
+    combination_histo->SetAxisRange(0, 30000, "Y"); //400000, 160000
 
     TCanvas* combination_canvas = new TCanvas("combination_canvas", "", 1000, 600);
 
@@ -158,7 +158,7 @@ int main() {
     leg1.AddEntry(norm_Drell_Yan_histo,"Drell-Yan");
     leg1.DrawClone("Same");
 
-    combination_canvas->Print("../run/combination_histogram.pdf");
+    combination_canvas->Print("../run/constrained_combination_histogram.pdf");
 
 
     TCanvas* background_fit_canvas = new TCanvas("background_fit_canvas", "", 1000, 600);
@@ -174,7 +174,7 @@ int main() {
     cout << "function string: " << function_TString << endl;
 
     TF1 background_BreitWigner_fit("background_BreitWigner_fit", function_TString, 50, 150);
-    background_BreitWigner_fit.SetParameters(9.03053e+08, 89.8006, 1.58452, 256.316, -38560);
+    background_BreitWigner_fit.SetParameters(1.33759e+08, 94.3739, 0.230345, -105.681, 23777.4);
     combination_histo->Fit(&background_BreitWigner_fit, "0","",fit_min, fit_max);
 
     combination_histo->Draw();
@@ -196,7 +196,7 @@ int main() {
     leg2.AddEntry(&background_fit_start,"background fit");
     leg2.DrawClone("Same");
 
-    background_fit_canvas->Print("../run/background_fit.pdf");
+    background_fit_canvas->Print("../run/constrained_background_fit.pdf");
 
     /*
     TCanvas* signal_fit_canvas = new TCanvas("signal_fit_canvas", "", 1000, 600);
@@ -239,6 +239,7 @@ int main() {
         cout << combination_histo->GetBinContent(i+1+skip_at_start) << endl;
         cout << globalized_background_fit(x[i]) << endl;
         cout << "y: " << y[i] << endl;
+        cout << "ye: " << ye[i] << endl;
         cout << endl;
         */
     }
@@ -247,9 +248,9 @@ int main() {
     TGraphErrors *excess = new TGraphErrors (bin_count-skip_at_start, x, y, xe, ye);
 
     excess->Draw("AP*");
-    excess->SetTitle("Excess of events");
+    excess->SetTitle("Excess of events with pT > 90 GeV");
     excess->GetXaxis()->SetTitle("m (GeV)");
     excess->GetYaxis()->SetTitle("events / 3.33 GeV");
-    no_background_canvas->Print("../run/no_background.pdf");
+    no_background_canvas->Print("../run/constrained_no_background.pdf");
 
 }
