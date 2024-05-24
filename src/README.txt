@@ -20,22 +20,41 @@ This is because the Drell-Yan generator can etiher generate whole Drell-Yan proc
 The commands to run to start simulation (you first have to change the pythia path to the correct directory in the makefile) are the following:
 
 make Higgs_event_generator
+./Higgs_event_generator.exe
+
 make Drell_Yan_generator
+./Drell_Yan_generator.exe
+
 make ttbar_generator
+./ttbar_generator.exe
 
 To start the data processing and analysis you have to run
 make data_combiner
+./data_combiner.exe
+
 make muon_data_smearer
+./muon_data_smearer.exe
+
 make reconstruction
+./reconstruction.exe
+
 make analysis
+./analysis.exe
+
 
 To do analysis with the pT cut:
 make pt_cut_analysis
+./pt_cut_analysis.exe
+
 
 The current version simulations don't give data files that need to be fixed, but for old data that needed to be fixed the following command is useful:
 make repair_muon_data
+./repair_muon_data.exe
+
 
 To read or inspect the data you can use the following commands (depending on if the data has been smeared or not):
 make muon_reader
-make smeared_muon_reader
+./muon_reader.exe
 
+make smeared_muon_reader
+./smeared_muon_reader.exe
