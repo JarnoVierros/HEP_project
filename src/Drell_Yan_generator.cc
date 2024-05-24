@@ -57,9 +57,12 @@ int main() {
     // Generator. Process selection
     Pythia pythia;
 
+    //These can be deleted or commented out to do the simulation that gives the correct normalisation coefficients.
+    //Wheren these are not commented out only the muon production events will happen.
     pythia.readString("WeakZ0:gmZmode = 2");
     pythia.readString("23:onMode = 0");
     pythia.readString("23:onIfAny = 13");
+    //--------------------------------------------------------
 
     // 13.6 TeV centre of mass beam energy:
     pythia.readString("Beams:eCM = 13600.");

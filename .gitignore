@@ -2,7 +2,6 @@
 *.root
 makefile
 *.vscode
-*.pdf
 data/
 figures/
 advanced_data/
