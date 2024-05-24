@@ -6,7 +6,7 @@ reconstruction_filename=data/ttbar_muons_smeared
 repair_filename=advanced_data/dense_DY_1
 
 #event generator event counts
-Drell_Yan_generator_event_count=2000000
+Drell_Yan_generator_event_count=1000
 Higgs_event_generator_event_count=1000
 ttbar_generator_event_count=1000
 
