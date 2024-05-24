@@ -1,6 +1,5 @@
 *.exe
 *.root
-makefile
 *.vscode
 data/
 figures/
