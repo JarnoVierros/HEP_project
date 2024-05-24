@@ -236,8 +236,8 @@ int main() {
         /*
         cout << "i: " << i << endl;
         cout << "x: " << x[i] << endl;
-        cout << combination_histo->GetBinContent(i+1+skip_at_start) << endl;
-        cout << globalized_background_fit(x[i]) << endl;
+        cout << "total events: " << combination_histo->GetBinContent(i+1+skip_at_start) << endl;
+        cout << "background:" << globalized_background_fit(x[i]) << endl;
         cout << "y: " << y[i] << endl;
         cout << "ye: " << ye[i] << endl;
         cout << endl;

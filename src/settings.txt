@@ -1,35 +1,43 @@
 #filenames
-muon_reader_filename=advanced_data/dense_DY_1.root
-smeared_muon_reader_filename=advanced_data/dense_DY_1_repaired_smeared.root
-muon_data_smearer_filename=advanced_data/dense_DY_1_repaired
-reconstruction_filename=data/ttbar_muons_smeared
-repair_filename=advanced_data/dense_DY_1
+muon_reader_filename=../data/DY_dataset_1.root
+smeared_muon_reader_filename=../data/Higgs_muon_decays_smeared.root
+muon_data_smearer_filename=../data/total_DY_3
+reconstruction_filename=../data/total_DY_3_smeared
+repair_filename=../data/DY_NEWSIM
 
 #event generator event counts
-Drell_Yan_generator_event_count=2000000
+Drell_Yan_generator_event_count=1000
 Higgs_event_generator_event_count=1000
 ttbar_generator_event_count=1000
 
-#analysis
-#filenames
-analysis_Higgs_filename=data/Higgs_muon_decays_smeared_reconstructed_mass
-analysis_Drell_Yan_filename=data/Drell_Yan_muons_smeared_reconstructed_mass
-analysis_ttbar_filename=data/ttbar_muons_smeared_reconstructed_mass
+#analysis filenames
+analysis_Higgs_filename=../data/pt_cut/Higgs_muon_decays_smeared_reconstructed_mass
+analysis_Drell_Yan_filename=../data/pt_cut/total_DY_3_smeared_reconstructed_mass
+analysis_ttbar_filename=../data/pt_cut/ttbar_muons_repaired_smeared_reconstructed_mass
 
 #normalization coefficients
 Higgs_normalization_coefficient=1.046
-Drell_Yan_normalization_coefficient=4143.0
-ttbar_normalization_coefficient=0.006255
+Drell_Yan_normalization_coefficient=8.242253696253602
+ttbar_normalization_coefficient=11.0655
+
+#Drell_Yan_normalization_coefficient without pT cut: 7.573432804660133
+#Drell_Yan_normalization_coefficient with pT cut: 8.242253696253602
 
 #data combiner inputs
-number_of_files_to_combine=8
-combine1=advanced_data/DY_dataset_1/Drell_Yan_muons1716408107
-combine2=advanced_data/DY_dataset_1/Drell_Yan_muons1716408112
-combine3=advanced_data/DY_dataset_1/Drell_Yan_muons1716408116
-combine4=advanced_data/DY_dataset_1/Drell_Yan_muons1716408120
-combine5=advanced_data/DY_dataset_1/Drell_Yan_muons1716408125
-combine6=advanced_data/DY_dataset_1/Drell_Yan_muons1716408127
-combine7=advanced_data/DY_dataset_1/Drell_Yan_muons1716408130
-combine8=advanced_data/DY_dataset_1/Drell_Yan_muons1716408133
-combined_file_name=advanced_data/dense_DY_1
+#give number of files to combine and the names of the files in appropriate slots
+#and the files will be combined to one data file
+number_of_files_to_combine=2
+combine1=../data/DY_NEWSIM_repaired
+combine2=../data/total_DY_2
+combine3=../data/DrellYanNEWSIM/Drell_Yan_muons1716412588
+combine4=../data/DrellYanNEWSIM/Drell_Yan_muons1716412592
+combine5=../data/DrellYanNEWSIM/Drell_Yan_muons1716412595
+combine6=../data/DY_dataset_2/Drell_Yan_muons1716468015
+combine7=../data/DY_dataset_2/Drell_Yan_muons1716468016
+combine8=../data/DY_dataset_2/Drell_Yan_muons1716468019
+combine9=../data/DY_desktop_2/Drell_Yan_muons1716459273
+combine10=../data/DY_desktop_2/Drell_Yan_muons1716462982
+combined_file_name=../data/total_DY_3
+
+
 

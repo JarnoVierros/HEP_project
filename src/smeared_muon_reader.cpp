@@ -58,16 +58,35 @@ int main() {
     TTreeReaderArray<int> Q(Reader, "Q");
     TTreeReaderArray<int> H(Reader, "H");
 
+    const float eta_cut = 2.1;
+    const float pT_cut = 20;
+
+    int total_muon_decays = 0;
+    int triggered_muon_decays = 0;
+
     while (Reader.Next()) {
-        if (p.GetSize() != 2) {
-            continue;
+
+        int valid_muons = 0;
+        int higgs_muons = 0;
+
+        for (int i=0; i<p.GetSize(); i++) {
+            if(abs(eta[i]) < eta_cut && pT[i] > pT_cut){
+                valid_muons++;
+            }
+            if (H[i] == 1) {
+                higgs_muons++;
+            }
         }
 
-        
-        float m_H = sqrt(pow(m[0],2) + pow(m[1],2) + 2*p[0]*p[1] - 2*p[0]*p[1]*( cos(phi[0])*cos(phi[1]) + sin(phi[0])*sin(phi[1]) + sinh(eta[0])*sinh(eta[1]) ));
-        cout << m_H << endl;
-        cout << pow(m[0],2) + pow(m[1],2) + 2*p[0]*p[1] - 2*p[0]*p[1]*( cos(phi[0])*cos(phi[1]) + sin(phi[0])*sin(phi[1]) + sinh(eta[0])*sinh(eta[1]) ) << endl;
-        
-        cout << endl;
+        if (higgs_muons >= 2) {
+            total_muon_decays++;
+            if (valid_muons >= 2) {
+                triggered_muon_decays++;
+            }
+        }
+
     }
+
+    cout << "Total muon decays: " << total_muon_decays << endl;
+    cout << "Triggered muon decays: " << triggered_muon_decays << endl;
 }
