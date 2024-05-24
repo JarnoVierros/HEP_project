@@ -7,6 +7,8 @@
 #include "TTree.h"
 #include "TF1.h"
 #include "TGraphErrors.h"
+#include "TStyle.h"
+#include "TLegend.h"
 
 using namespace std;
 
@@ -48,9 +50,11 @@ string get_par(TF1 fit, int par) {
 
 int main() {
 
-    const int bin_count = 41; //41, 1001
+    const int bin_count = 12; //41, 12
     const float lower_limit = 110; //110, 50
     const float upper_limit = 150; //150, 150
+
+    gStyle->SetOptStat(0);
 
     map<string, string> settings;
     read_settings(settings);
@@ -67,12 +71,16 @@ int main() {
     float Higgs_m;
     Higgs_masses_file->SetBranchAddress("m", &Higgs_m);
 
-    TH1F* Higgs_histo = new TH1F("Higgs_histo", "Normalized reconstructed mass distribution;m (GeV);events", bin_count, lower_limit, upper_limit);
+    TH1F* Higgs_histo = new TH1F("Higgs_histo", "Normalized reconstructed mass distribution;m (GeV);events / 3.33 GeV", bin_count, lower_limit, upper_limit);
+
+    int Higgs_count = 0;
 
     for (int i=0; i<Higgs_masses_file->GetEntries(); i++) {
         Higgs_masses_file->GetEntry(i);
         Higgs_histo->Fill(Higgs_m);
+        Higgs_count++;
     }
+    cout << "Higgs: " << Higgs_count << endl;
 
     TFile Drell_Yan_file(Drell_Yan_filename + ".root");
     
@@ -84,11 +92,14 @@ int main() {
 
     TH1F* Drell_Yan_histo = new TH1F("Drell_Yan_histo", "Reconstructed Drell-Yan event masses", bin_count, lower_limit, upper_limit);
 
+    int Drell_Yan_count = 0;
+
     for (int i=0; i<Drell_Yan_masses_file->GetEntries(); i++) {
         Drell_Yan_masses_file->GetEntry(i);
         Drell_Yan_histo->Fill(Drell_Yan_m);
+        Drell_Yan_count++;
     }
-
+    cout << "Drell_Yan: " << Drell_Yan_count << endl;
 
     TFile ttbar_file(ttbar_filename + ".root");
     
@@ -100,10 +111,14 @@ int main() {
 
     TH1F* ttbar_histo = new TH1F("ttbar_histo", "Reconstructed ttbar event masses", bin_count, lower_limit, upper_limit);
 
+    int ttbar_count = 0;
+
     for (int i=0; i<ttbar_masses_file->GetEntries(); i++) {
         ttbar_masses_file->GetEntry(i);
         ttbar_histo->Fill(ttbar_m);
+        ttbar_count++;
     }
+    cout << "ttbar: " << ttbar_count << endl;
 
     TH1F *norm_Higgs_histo = (TH1F *)Higgs_histo->Clone("norm_Higgs_histo");
     float Higgs_coefficient = stof(settings["Higgs_normalization_coefficient"]);
@@ -121,9 +136,9 @@ int main() {
     combination_histo->Add(norm_ttbar_histo);
     combination_histo->Add(norm_Drell_Yan_histo);
 
-    combination_histo->SetAxisRange(0, 160000, "Y"); //0, 150000
+    combination_histo->SetAxisRange(0, 400000, "Y"); //400000, 160000
 
-    TCanvas* combination_canvas = new TCanvas("combination_canvas", "", 800, 600);
+    TCanvas* combination_canvas = new TCanvas("combination_canvas", "", 1000, 600);
 
     combination_histo->Draw();
 
@@ -134,10 +149,19 @@ int main() {
     norm_Drell_Yan_histo->Draw("SAME");
     norm_Drell_Yan_histo->SetLineColor(kBlack);
 
-    combination_canvas->Print("figures/combination_histogram.pdf");
+    TLegend leg1(.7,.6,.9,.9,"");
+    leg1.SetFillColor(0);
+    leg1.SetTextSize(0.05);
+    leg1.AddEntry(combination_histo,"total events");
+    leg1.AddEntry(norm_Higgs_histo,"signal");
+    leg1.AddEntry(norm_ttbar_histo,"ttbar");
+    leg1.AddEntry(norm_Drell_Yan_histo,"Drell-Yan");
+    leg1.DrawClone("Same");
+
+    combination_canvas->Print("../run/combination_histogram.pdf");
 
 
-    TCanvas* background_fit_canvas = new TCanvas("background_fit_canvas", "", 800, 600);
+    TCanvas* background_fit_canvas = new TCanvas("background_fit_canvas", "", 1000, 600);
 
     float fit_min = lower_limit;
     float fit_max = upper_limit;
@@ -145,31 +169,37 @@ int main() {
     float signal_start = 123.5;
     float signal_stop = 125.5;
 
-    string function_string = "(" + create_interval(1, signal_start) + " + " + create_interval(signal_stop, 150) + ")*" + "([0]*TMath::BreitWigner(x,[1],[2]) + [3])";
+    string function_string = "(" + create_interval(1, signal_start) + " + " + create_interval(signal_stop, 150) + ")*" + "([0]*TMath::BreitWigner(x,[1],[2]) + [3]*x + [4])";
     TString function_TString = function_string;
     cout << "function string: " << function_TString << endl;
 
     TF1 background_BreitWigner_fit("background_BreitWigner_fit", function_TString, 50, 150);
-    background_BreitWigner_fit.SetParameters(4.66888e+08, 90.5234, 0.810367, 1099.38);
+    background_BreitWigner_fit.SetParameters(9.03053e+08, 89.8006, 1.58452, 256.316, -38560);
     combination_histo->Fit(&background_BreitWigner_fit, "0","",fit_min, fit_max);
 
     combination_histo->Draw();
+    //norm_Drell_Yan_histo->Draw("SAME");
 
-
-    TString background_fit_string = get_par(background_BreitWigner_fit, 0)+"*TMath::BreitWigner(x,"+get_par(background_BreitWigner_fit, 1)+","+get_par(background_BreitWigner_fit, 2)+")";
+    TString background_fit_string = get_par(background_BreitWigner_fit, 0)+"*TMath::BreitWigner(x,"+get_par(background_BreitWigner_fit, 1)+","+get_par(background_BreitWigner_fit, 2)+")+"+get_par(background_BreitWigner_fit, 3)+"*x+"+get_par(background_BreitWigner_fit, 4);
     TF1 background_fit_start("background_fit_start", background_fit_string, fit_min, signal_start);
     TF1 background_fit_middle("background_fit_start", background_fit_string, signal_start, signal_stop);
     background_fit_middle.SetLineStyle(2);
     TF1 background_fit_stop("background_fit_start", background_fit_string, signal_stop, fit_max);
-
     background_fit_start.DrawCopy("SAME");
     background_fit_middle.DrawCopy("SAME");
     background_fit_stop.DrawCopy("SAME");
 
-    background_fit_canvas->Print("figures/background_fit.pdf");
+    TLegend leg2(.6,.6,.9,.9,"");
+    leg2.SetFillColor(0);
+    leg2.SetTextSize(0.05);
+    leg2.AddEntry(combination_histo,"total events");
+    leg2.AddEntry(&background_fit_start,"background fit");
+    leg2.DrawClone("Same");
+
+    background_fit_canvas->Print("../run/background_fit.pdf");
 
     /*
-    TCanvas* signal_fit_canvas = new TCanvas("signal_fit_canvas", "", 800, 600);
+    TCanvas* signal_fit_canvas = new TCanvas("signal_fit_canvas", "", 1000, 600);
 
     //combination_histo->Draw();
     combination_histo->Draw();
@@ -187,11 +217,11 @@ int main() {
     TF1 isolated_signal("isolated_signal", isolated_signal_string, fit_min, fit_max);
     isolated_signal.DrawCopy("SAME");
 
-    signal_fit_canvas->Print("figures/signal_fit.pdf");
+    signal_fit_canvas->Print("../run/signal_fit.pdf");
 
     */
 
-    TCanvas* no_background_canvas = new TCanvas("no_background_canvas", "", 800, 600);
+    TCanvas* no_background_canvas = new TCanvas("no_background_canvas", "", 1000, 600);
     TF1 globalized_background_fit("globalized_background_fit", background_fit_string, fit_min, fit_max);
 
     int skip_at_start = 0;
@@ -217,6 +247,9 @@ int main() {
     TGraphErrors *excess = new TGraphErrors (bin_count-skip_at_start, x, y, xe, ye);
 
     excess->Draw("AP*");
-    no_background_canvas->Print("figures/no_background.pdf");
+    excess->SetTitle("Excess of events");
+    excess->GetXaxis()->SetTitle("m (GeV)");
+    excess->GetYaxis()->SetTitle("events / 3.33 GeV");
+    no_background_canvas->Print("../run/no_background.pdf");
 
 }
