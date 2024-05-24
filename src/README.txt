@@ -29,6 +29,9 @@ make muon_data_smearer
 make reconstruction
 make analysis
 
+To do the pT cut analysis:
+make pt_cut_analysis
+
 incase you want an alternative analysis with different normalization:
 make alternative_analysis
 
