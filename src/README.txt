@@ -29,7 +29,7 @@ make muon_data_smearer
 make reconstruction
 make analysis
 
-To do the pT cut analysis:
+To do analysis with the pT cut:
 make pt_cut_analysis
 
 The current version simulations don't give data files that need to be fixed, but for old data that needed to be fixed the following command is useful:
