@@ -95,9 +95,12 @@ int main() {
     int Double_muon_counter = 0;
     int trigger_pass = 0;
     TH1F* histo = new TH1F("reconstructed_mass", "Mass of the reconstructed particle", 200, 0, 250);
+    TH1F* histo_eta = new TH1F("reconstructed_eta", "eta of the reconstructed particle", 200, -10, 10);
+    TH1F* histo_pT = new TH1F("reconstructed_pT", "pT of the reconstructed particle", 200, -10, 200);
 
     const float eta_cut = 2.1; //2.1, 1
     const float pT_cut = 20; //20, 50
+    const float reconstructed_pT_cut = 0; //90
 
     while(Reader.Next()) {
 
@@ -120,8 +123,28 @@ int main() {
                 recon_m = sqrt(pow(m[muon_indices[0]],2) + pow(m[muon_indices[1]],2) + 2*sqrt( pow(m[muon_indices[0]], 2) + pow(p[muon_indices[0]], 2) )*sqrt( pow(m[muon_indices[1]], 2) + pow(p[muon_indices[1]], 2) ) - 2*pT[muon_indices[0]]*pT[muon_indices[1]]*( cos(phi[muon_indices[0]])*cos(phi[muon_indices[1]])
                         + sin(phi[muon_indices[0]])*sin(phi[muon_indices[1]]) + sinh(eta[muon_indices[0]])*sinh(eta[muon_indices[1]]) ));
 
+                float px0 = pT[muon_indices[0]]*cos(phi[muon_indices[0]]);
+                float py0 = pT[muon_indices[0]]*sin(phi[muon_indices[0]]);
+                float pz0 = pT[muon_indices[0]]*sinh(eta[muon_indices[0]]);
+                float p0 = sqrt(px0*px0 + py0*py0 + pz0*pz0);
+                float pT0 = sqrt(px0*px0 + py0*py0);
+
+                float px1 = pT[muon_indices[1]]*cos(phi[muon_indices[1]]);
+                float py1 = pT[muon_indices[1]]*sin(phi[muon_indices[1]]);
+                float pz1 = pT[muon_indices[1]]*sinh(eta[muon_indices[1]]);
+                float p1 = sqrt(px1*px1 + py1*py1 + pz1*pz1);
+                float pT1 = sqrt(px1*px1 + py1*py1);
+
+                float recon_eta = atanh((pz0+pz1)/sqrt(pow(px0+px1, 2)+pow(py0+py1, 2)+pow(pz0+pz1, 2)));
+                float recon_pT = (pz0 + pz1)/sinh(recon_eta);
+
+                if (recon_pT<reconstructed_pT_cut) {
+                    continue;
+                }
 
                 histo -> Fill(recon_m);
+                histo_eta->Fill(recon_eta);
+                histo_pT->Fill(recon_pT);
 
                 output_mass = recon_m;
                 if (H[muon_indices[0]] == 1 && H[muon_indices[1]] == 1) {
@@ -149,6 +172,14 @@ int main() {
     histo -> Draw();
     
     c -> Print(filename + "_reconstructed_mass.pdf");
+
+    TCanvas* eta_canvas = new TCanvas("eta_canvas", "", 800, 600);
+    histo_eta->Draw();
+    eta_canvas->Print(filename + "_eta_hist.pdf");
+
+    TCanvas* pT_canvas = new TCanvas("pT_canvas", "", 800, 600);
+    histo_pT->Draw();
+    pT_canvas->Print(filename + "_pT_hist.pdf");
     
     new_metadata.Write();
     new_tree.Write();
